@@ -1,0 +1,225 @@
+import 'dart:async';
+
+import 'package:chess_application/features/game/chess_pieces.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+class GameController {
+  ValueNotifier<List<int>> enemySelected = ValueNotifier([]);
+  ValueNotifier<List<int>> playerSelected = ValueNotifier([]);
+  ValueNotifier<List<int>> previousSelected = ValueNotifier([]);
+
+  late List<List<ChessPieces?>> board;
+  ValueNotifier<List<List<int>>> legalMoves = ValueNotifier([]);
+
+  GameController() {
+    initBoard();
+  }
+
+  Timer? startTimer(ValueNotifier<Timer?> timer, ValueNotifier<Duration> duration) {
+    return timer.value = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) {
+        duration.value = duration.value - const Duration(seconds: 1);
+        if (duration.value.inSeconds <= 0) timer.value?.cancel();
+      },
+    );
+  }
+
+  bool _isInBounds(int row, int col) => row >= 0 && row < 8 && col >= 0 && col < 8;
+
+  List<List<int>> getPawnMoves(int row, int col) {
+    final piece = board[row][col];
+    if (piece == null || piece.type != ChessType.pawn) return [];
+    List<List<int>> moves = [];
+
+    int direction = piece.isWhite ? -1 : 1;
+    int startRow = piece.isWhite ? 6 : 1;
+
+    // One Step
+    if (_isInBounds(row + direction, col) && board[row + direction][col] == null) {
+      moves.add([row + direction, col]);
+      // Two Step
+      if (row == startRow && board[row + 2 * direction][col] == null) {
+        moves.add([row + 2 * direction, col]);
+      }
+    }
+
+    for (int dx in [-1, 1]) {
+      int newRow = row + direction;
+      int newCol = col + dx;
+      if (_isInBounds(newRow, newCol)) {
+        final target = board[newRow][newCol];
+        if (target != null && target.isWhite != piece.isWhite) {
+          moves.add([newRow, newCol]);
+        }
+      }
+    }
+    return moves;
+  }
+
+  List<List<int>> getKnightMoves(int row, int col) {
+    final List<List<int>> moves = [];
+    final piece = board[row][col];
+
+    if (piece == null || piece.type != ChessType.knight) return [];
+
+    final availableMoves = [
+      [row - 2, col + 1],
+      [row - 2, col - 1],
+      [row - 1, col + 2],
+      [row - 1, col - 2],
+      [row + 1, col + 2],
+      [row + 1, col - 2],
+      [row + 2, col + 1],
+      [row + 2, col - 1],
+    ];
+    for (final move in availableMoves) {
+      int newRow = move[0];
+      int newColumn = move[1];
+
+      if (_isInBounds(newRow, newColumn)) {
+        final target = board[newRow][newColumn];
+        if (target == null || target.isWhite != piece.isWhite) {
+          moves.add([newRow, newColumn]);
+        }
+      }
+    }
+    return moves;
+  }
+
+  List<List<int>> getQueenMoves(int row, int col) {
+    return [];
+  }
+
+  List<List<int>> getKingMoves(int row, int col) {
+    return [];
+  }
+
+  List<List<int>> getRockMoves(int row, int col) {
+    return [];
+  }
+
+  List<List<int>> getBishopMoves(int row, int col) {
+    return [];
+  }
+
+  void initBoard() {
+    board = List.generate(8, (_) => List.filled(8, null));
+
+    // Set black pieces
+    board[0] = List.generate(
+        8,
+        (col) => ChessPieces(
+              type: getPiecesType(col),
+              isWhite: false,
+              imagePath: getBlackPieceImagePath(col),
+            ));
+    board[1] = List.generate(
+        8,
+        (_) => const ChessPieces(
+              type: ChessType.pawn,
+              isWhite: false,
+              imagePath: 'assets/black-pieces/black-pawn.png',
+            ));
+
+    // Set white pieces
+    board[7] = List.generate(
+        8,
+        (col) => ChessPieces(
+              type: getPiecesType(col),
+              isWhite: true,
+              imagePath: getWhitePieceImagePath(col),
+            ));
+    board[6] = List.generate(
+        8,
+        (_) => const ChessPieces(
+              type: ChessType.pawn,
+              isWhite: true,
+              imagePath: 'assets/white-pieces/white-pawn.png',
+            ));
+
+    // Middle rows stay null
+  }
+
+  ValueNotifier<bool> isWhiteTurn = ValueNotifier(true);
+
+  ValueNotifier<List<String>> opponentCaptured = ValueNotifier(
+    [
+      'assets/white-pieces/white-bishop.png',
+      'assets/white-pieces/white-knight.png',
+      'assets/white-pieces/white-pawn.png',
+    ],
+  );
+  ValueNotifier<List<String>> playerCaptured = ValueNotifier([]);
+
+  ChessType getPiecesType(int col) {
+    switch (col) {
+      case 0:
+      case 7:
+        return ChessType.rock;
+      case 1:
+      case 6:
+        return ChessType.knight;
+      case 2:
+      case 5:
+        return ChessType.bishop;
+      case 3:
+        return ChessType.queen;
+      case 4:
+        return ChessType.king;
+      default:
+        throw ArgumentError('Invalid column index: $col');
+    }
+  }
+
+  String getImagePieces(int row, int col) {
+    return switch (row) {
+      0 => getBlackPieceImagePath(col),
+      1 => 'assets/black-pieces/black-pawn.png',
+      6 => 'assets/white-pieces/white-pawn.png',
+      7 => getWhitePieceImagePath(col),
+      _ => '',
+    };
+  }
+
+  String getBlackPieceImagePath(int col) {
+    switch (col) {
+      case 0:
+      case 7:
+        return 'assets/black-pieces/black-rock.png';
+      case 1:
+      case 6:
+        return 'assets/black-pieces/black-knight.png';
+      case 2:
+      case 5:
+        return 'assets/black-pieces/black-bishop.png';
+      case 3:
+        return 'assets/black-pieces/black-queen.png';
+      case 4:
+        return 'assets/black-pieces/black-king.png';
+      default:
+        throw ArgumentError('Invalid column index: $col');
+    }
+  }
+
+  String getWhitePieceImagePath(int col) {
+    switch (col) {
+      case 0:
+      case 7:
+        return 'assets/white-pieces/white-rock.png';
+      case 1:
+      case 6:
+        return 'assets/white-pieces/white-knight.png';
+      case 2:
+      case 5:
+        return 'assets/white-pieces/white-bishop.png';
+      case 3:
+        return 'assets/white-pieces/white-queen.png';
+      case 4:
+        return 'assets/white-pieces/white-king.png';
+      default:
+        throw ArgumentError('Invalid column index: $col');
+    }
+  }
+}
