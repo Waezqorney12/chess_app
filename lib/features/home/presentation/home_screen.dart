@@ -16,6 +16,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
         appBar: username != null || username!.isNotEmpty
             ? AppBar(
+                backgroundColor: AppPalette.appBarColor,
                 title: Row(
                   children: [
                     InkWell(

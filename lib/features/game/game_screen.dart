@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:chess_application/core/app_palette.dart';
 import 'package:chess_application/core/app_text_style.dart';
+import 'package:chess_application/core/routes_pages.dart';
 import 'package:chess_application/core/utils/extension_utils.dart';
 import 'package:chess_application/core/utils/notification_utils.dart';
 import 'package:chess_application/core/utils/positioned_utils.dart';
@@ -13,7 +14,8 @@ import 'package:chess_application/features/game/game_controller.dart';
 import 'package:flutter/material.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  final int timer;
+  const GameScreen({super.key, required this.timer});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -23,12 +25,14 @@ class _GameScreenState extends State<GameScreen> {
   List<List<String>> historyMoves = [];
   ValueNotifier<Timer?> enemyTimer = ValueNotifier(null);
   ValueNotifier<Timer?> playerTimer = ValueNotifier(null);
-  ValueNotifier<Duration> enemyDuration = ValueNotifier(const Duration(minutes: 10));
-  ValueNotifier<Duration> playerDuration = ValueNotifier(const Duration(minutes: 10));
+  late ValueNotifier<Duration> enemyDuration;
+  late ValueNotifier<Duration> playerDuration;
   late GameController _controller;
   @override
   void initState() {
     _controller = GameController();
+    enemyDuration = ValueNotifier(Duration(minutes: widget.timer));
+    playerDuration = ValueNotifier(Duration(minutes: widget.timer));
     if (_controller.isWhiteTurn.value == false) enemyTimer.value = _controller.startTimer(enemyTimer, enemyDuration);
     playerTimer.value = _controller.startTimer(playerTimer, playerDuration);
     super.initState();
@@ -42,8 +46,8 @@ class _GameScreenState extends State<GameScreen> {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) => notificationDialog(
             context: context,
-            onTap: () => exit(0),
-            text: 'Apakah anda yakin ingin keluar',
+            onTap: () => Navigator.pushAndRemoveUntil(context, Routes.home(), (route) => false),
+            text: 'Are you sure want to resign?',
           ),
         );
       },

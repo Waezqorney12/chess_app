@@ -18,7 +18,7 @@ class Routes {
   static MaterialPageRoute login() => MaterialPageRoute(builder: (context) => const LoginScreen());
   static MaterialPageRoute regist() => MaterialPageRoute(builder: (context) => const RegisterScreen());
   static MaterialPageRoute thumbnailRegist() => MaterialPageRoute(builder: (context) => const ThumbnailRegisterScreen());
-  static MaterialPageRoute game() => MaterialPageRoute(builder: (context) => const GameScreen());
+  static MaterialPageRoute game({required int timer}) => MaterialPageRoute(builder: (context) => GameScreen(timer: timer));
   static MaterialPageRoute home() => MaterialPageRoute(builder: (context) => const HomeScreen());
   static MaterialPageRoute gameSettings() => MaterialPageRoute(builder: (context) => const GameSettingsScreen());
   static MaterialPageRoute puzzle() => MaterialPageRoute(builder: (context) => const GamePuzzleScreen());

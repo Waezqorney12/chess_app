@@ -77,7 +77,7 @@ class _GameSettingsScreenState extends State<GameSettingsScreen> {
           ),
         ).paddingOnly(top: 40, bottom: 12),
         ElevatedButton(
-            onPressed: () => Navigator.pushAndRemoveUntil(context, Routes.game(), (route) => false),
+            onPressed: () => Navigator.pushAndRemoveUntil(context, Routes.game(timer: time), (route) => false),
             child: Text(
               'Start Game',
               style: AppTextStyle.montserrat20ExtraBold,
