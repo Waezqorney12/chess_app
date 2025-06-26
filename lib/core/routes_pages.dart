@@ -24,7 +24,7 @@ class Routes {
   static MaterialPageRoute puzzle() => MaterialPageRoute(builder: (context) => const GamePuzzleScreen());
   static MaterialPageRoute lesson() => MaterialPageRoute(builder: (context) => const ChessLessonScreen());
   static MaterialPageRoute friendlist() => MaterialPageRoute(builder: (context) => const FriendlistScreen());
-  static MaterialPageRoute bot() => MaterialPageRoute(builder: (context) => const BotScreen());
+  static MaterialPageRoute bot() => MaterialPageRoute(builder: (context) => BotScreen());
   static MaterialPageRoute profile() => MaterialPageRoute(builder: (context) => const ProfileScreen());
   static MaterialPageRoute profileEdit() => MaterialPageRoute(
       builder: (context) => ProfileEditScreen(

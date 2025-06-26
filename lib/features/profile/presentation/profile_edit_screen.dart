@@ -137,6 +137,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             borderRadius: BorderRadius.zero,
             contentPadding: const EdgeInsets.only(left: 22),
             border: Border.symmetric(
+              
               horizontal: BorderSide(color: AppPalette.appBarColor),
             ),
           )

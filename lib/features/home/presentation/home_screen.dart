@@ -78,6 +78,7 @@ class HomeScreen extends StatelessWidget {
                     0 => Navigator.push(context, Routes.gameSettings()),
                     1 => Navigator.push(context, Routes.puzzle()),
                     2 => Navigator.push(context, Routes.lesson()),
+                    3 => Navigator.push(context, Routes.bot()),
                     _ => throw Exception('Invalid route')
                   },
                   child: Row(
@@ -185,5 +186,11 @@ List<GameOptionsEntities> gameOptions = const [
     'Take Lessons',
     'Learn something new!',
     'assets/lesson-icon.png',
+  ),
+  GameOptionsEntities(
+    'assets/thumbnail-chessboard.jpg',
+    'Play a bot',
+    'Advance your chess skills!',
+    'assets/bot-icon.png',
   ),
 ];

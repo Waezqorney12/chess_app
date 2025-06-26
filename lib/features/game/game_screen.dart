@@ -10,7 +10,7 @@ import 'package:chess_application/core/utils/positioned_utils.dart';
 import 'package:chess_application/core/utils/time_utils.dart';
 import 'package:chess_application/features/game/chess_pieces.dart';
 import 'package:chess_application/features/game/component.dart';
-import 'package:chess_application/features/game/game_controller.dart';
+import 'package:chess_application/features/game/controller/game_controller.dart';
 import 'package:flutter/material.dart';
 
 class GameScreen extends StatefulWidget {
