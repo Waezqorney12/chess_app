@@ -1,3 +1,5 @@
+import 'package:chess_application/features/bot/domain/entities/bot_entities.dart';
+import 'package:chess_application/features/bot/presentation/bot_challenge_screen.dart';
 import 'package:chess_application/features/bot/presentation/bot_screen.dart';
 import 'package:chess_application/features/friendlist/presentation/friendlist_screen.dart';
 import 'package:chess_application/features/game/game_puzzle_screen.dart';
@@ -16,6 +18,8 @@ import '../features/profile/presentation/profile_edit_screen.dart';
 
 class Routes {
   static MaterialPageRoute login() => MaterialPageRoute(builder: (context) => const LoginScreen());
+  static MaterialPageRoute botChallenge({required BotEntities bot}) =>
+      MaterialPageRoute(builder: (context) => BotChallengeScreen(bot: bot));
   static MaterialPageRoute regist() => MaterialPageRoute(builder: (context) => const RegisterScreen());
   static MaterialPageRoute thumbnailRegist() => MaterialPageRoute(builder: (context) => const ThumbnailRegisterScreen());
   static MaterialPageRoute game({required int timer}) => MaterialPageRoute(builder: (context) => GameScreen(timer: timer));

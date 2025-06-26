@@ -4,6 +4,8 @@ import 'package:chess_application/features/game/chess_pieces.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+enum PlayerColor { white, random, black }
+
 class GameController {
   ValueNotifier<List<int>> enemySelected = ValueNotifier([]);
   ValueNotifier<List<int>> playerSelected = ValueNotifier([]);

@@ -1,8 +1,41 @@
+import 'package:chess_application/features/bot/domain/entities/challenge_entities.dart';
+import 'package:chess_application/features/game/controller/game_controller.dart';
 import 'package:flutter/material.dart';
 
-import '../domain/bot_entities.dart';
+import '../domain/entities/bot_entities.dart';
 
 class BotController {
+  ValueNotifier<PlayerColor> playeColor = ValueNotifier(PlayerColor.white);
+  ValueNotifier<ChallengeEntities> selectedChallenge = ValueNotifier(
+    const ChallengeEntities(
+      challengeName: 'Challenge',
+      challengeDescription: 'No help of any kind',
+      challengePoint: 3,
+    ),
+  );
+  final ValueNotifier<List<ChallengeEntities>> challenge = ValueNotifier(const [
+    ChallengeEntities(
+      challengeName: 'Challenge',
+      challengeDescription: 'No help of any kind',
+      challengePoint: 3,
+    ),
+    ChallengeEntities(
+      challengeName: 'Friendly',
+      challengeDescription: 'Hints & takebacks allowed',
+      challengePoint: 2,
+    ),
+    ChallengeEntities(
+      challengeName: 'Assisted',
+      challengeDescription: 'All the tools available',
+      challengePoint: 1,
+    ),
+    ChallengeEntities(
+      challengeName: 'Custom',
+      challengeDescription: 'Choose the settings you want',
+      challengePoint: 1,
+    ),
+  ]);
+
   final ValueNotifier<BotEntities> displayBot = ValueNotifier(const BotEntities(
       botImage: 'assets/bot/adaptive/jimmy-bot-icon.png',
       botName: 'Jimmy',

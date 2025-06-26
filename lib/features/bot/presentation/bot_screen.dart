@@ -3,10 +3,11 @@ import 'package:chess_application/core/routes_pages.dart';
 import 'package:chess_application/core/utils/extension_utils.dart';
 import 'package:chess_application/core/widget/appbar_widget.dart';
 import 'package:chess_application/features/bot/controller/bot_controller.dart';
+import 'package:chess_application/features/bot/shared/bot_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../domain/bot_entities.dart';
+import '../domain/entities/bot_entities.dart';
 
 class BotScreen extends StatelessWidget {
   BotScreen({super.key});
@@ -22,7 +23,7 @@ class BotScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         bottomNavigationBar: ElevatedButton(
-          onPressed: () => Navigator.pushAndRemoveUntil(context, Routes.home(), (route) => false),
+          onPressed: () => Navigator.push(context, Routes.botChallenge(bot: _controller.displayBot.value)),
           child: Text(
             'Choose',
             style: AppTextStyle.montserrat20ExtraBold,
@@ -35,20 +36,7 @@ class BotScreen extends StatelessWidget {
               final displayBot = _controller.displayBot.value;
               return Column(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      color: Colors.white,
-                      height: 100,
-                      width: 100,
-                      child: Image.asset(displayBot.botImage),
-                    ),
-                  ),
-                  Text.rich(
-                    TextSpan(text: displayBot.botName, style: AppTextStyle.montserrat24ExtraBold, children: [
-                      TextSpan(text: " (${displayBot.botElo})", style: AppTextStyle.montserrat16Medium),
-                    ]),
-                  ),
+                  botImage(context, displayBot.botImage, displayBot.botName, "${displayBot.botElo}"),
                   Text(textAlign: TextAlign.center, displayBot.botDescription).paddingOnly(top: 12, bottom: 40),
                   ...List.generate(
                     BotType.values.length,
