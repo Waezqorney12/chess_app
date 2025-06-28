@@ -1,6 +1,7 @@
 import 'package:chess_application/features/bot/domain/entities/bot_entities.dart';
 import 'package:chess_application/features/bot/presentation/bot_challenge_screen.dart';
 import 'package:chess_application/features/bot/presentation/bot_screen.dart';
+import 'package:chess_application/features/chat/presentation/chat_screen.dart';
 import 'package:chess_application/features/friendlist/presentation/friendlist_screen.dart';
 import 'package:chess_application/features/game/game_puzzle_screen.dart';
 import 'package:chess_application/features/game/game_screen.dart';
@@ -34,4 +35,5 @@ class Routes {
       builder: (context) => ProfileEditScreen(
             profile: ProfileEntities(),
           ));
+  static MaterialPageRoute chat() => MaterialPageRoute(builder: (context) => const ChatScreen());
 }

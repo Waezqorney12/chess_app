@@ -1,5 +1,6 @@
 import 'package:chess_application/core/app_palette.dart';
 import 'package:chess_application/core/app_text_style.dart';
+import 'package:chess_application/core/routes_pages.dart';
 import 'package:chess_application/core/utils/extension_utils.dart';
 import 'package:chess_application/core/utils/positioned_utils.dart';
 import 'package:chess_application/core/utils/string_utils.dart';
@@ -20,6 +21,14 @@ class _FriendlistScreenState extends State<FriendlistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context,
+          actions: [
+            IconButton(
+                onPressed: () => Navigator.push(context, Routes.chat()),
+                icon: const Icon(
+                  Icons.inbox_rounded,
+                  color: Colors.grey,
+                ))
+          ],
           onPressed: () => Navigator.pop(context),
           backgroundColor: AppPalette.appBarColor,
           title: 'Friends',
@@ -107,7 +116,7 @@ class _FriendlistScreenState extends State<FriendlistScreen> {
                         height: 80,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          image: DecorationImage(
+                          image: const DecorationImage(
                             fit: BoxFit.fill,
                             image: AssetImage('assets/thumbnail-chessboard.jpg'),
                           ),
