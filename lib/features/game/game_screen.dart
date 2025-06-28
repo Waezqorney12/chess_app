@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:chess_application/core/app_palette.dart';
 import 'package:chess_application/core/app_text_style.dart';
@@ -33,8 +32,7 @@ class _GameScreenState extends State<GameScreen> {
     _controller = GameController();
     enemyDuration = ValueNotifier(Duration(minutes: widget.timer));
     playerDuration = ValueNotifier(Duration(minutes: widget.timer));
-    if (_controller.isWhiteTurn.value == false) enemyTimer.value = _controller.startTimer(enemyTimer, enemyDuration);
-    playerTimer.value = _controller.startTimer(playerTimer, playerDuration);
+    if (_controller.isWhiteTurn.value) playerTimer.value = _controller.startTimer(playerTimer, playerDuration);
     super.initState();
   }
 
@@ -54,6 +52,17 @@ class _GameScreenState extends State<GameScreen> {
       child: Scaffold(
         body: Center(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
+            InkWell(
+              onTap: () {
+                print(_controller.newestSelected.value);
+                print(_controller.previousSelected.value);
+              },
+              child: Container(
+                height: 80,
+                width: 80,
+                color: Colors.red,
+              ),
+            ),
             // Enemy Player
             ValueListenableBuilder(
               valueListenable: enemyDuration,
@@ -77,8 +86,16 @@ class _GameScreenState extends State<GameScreen> {
                     final isWhite = (row + col) % 2 == 0;
                     final piece = _controller.board[row][col];
 
-                    final selected = piece?.isWhite == true ? _controller.playerSelected.value : _controller.enemySelected.value;
-                    final isSelected = selected.isNotEmpty && selected[0] == row && selected[1] == col;
+                    final previous = _controller.previousSelected.value;
+                    final newest = _controller.newestSelected.value;
+
+                    final selected = _controller.isWhiteTurn.value == true
+                        ? _controller.playerSelected.value
+                        : _controller.enemySelected.value;
+                    final isSelected = _controller.isMatch(selected, row, col) ||
+                        _controller.isMatch(previous, row, col) ||
+                        _controller.isMatch(newest, row, col);
+
                     final bgColor = isSelected
                         ? AppPalette.selectedBackground
                         : isWhite
@@ -91,45 +108,80 @@ class _GameScreenState extends State<GameScreen> {
                         color: bgColor,
                         child: InkWell(
                             onTap: () {
-                              if (piece == null) return;
-                              print("object: $row $col");
-                              final isLegal = _controller.legalMoves.value.any(
-                                (element) => element[0] == row && element[1] == col,
-                              );
+                              print("Row: $row $col");
+                              final isLegal =
+                                  _controller.legalMoves.value.any((element) => element[0] == row && element[1] == col);
+                              final isWhiteTurn = _controller.isWhiteTurn.value;
+                              final selected = isWhiteTurn ? _controller.playerSelected.value : _controller.enemySelected.value;
 
-                              print(_controller.isWhiteTurn.value);
-                              print(selected);
-                              print(piece.isWhite);
-                              print(bgColor);
-                              // Show available legal move each pieces
-                              switch (piece.type) {
-                                case ChessType.pawn:
-                                  _controller.legalMoves.value = _controller.getPawnMoves(row, col);
-                                case ChessType.knight:
-                                  _controller.legalMoves.value = _controller.getKnightMoves(row, col);
-                                default:
+                              if (selected.isNotEmpty && isLegal) {
+                                final fromRow = selected[0];
+                                final fromColumn = selected[1];
+
+                                setState(() {
+                                  if (_controller.board[row][col] != null) {
+                                    final capturedPiece = _controller.board[row][col];
+
+                                    // Capture Pieces Logic
+                                    if (isWhiteTurn) {
+                                      _controller.playerCaptured.value = [
+                                        ..._controller.playerCaptured.value,
+                                        capturedPiece!.imagePath,
+                                      ];
+                                    } else {
+                                      _controller.opponentCaptured.value = [
+                                        ..._controller.opponentCaptured.value,
+                                        capturedPiece!.imagePath,
+                                      ];
+                                    }
+                                  }
+
+                                  // Updating the board
+                                  _controller.board[row][col] = _controller.board[fromRow][fromColumn];
+                                  _controller.board[fromRow][fromColumn] = null;
                                   _controller.legalMoves.value = [];
+                                  _controller.playerSelected.value = [];
+                                  _controller.enemySelected.value = [];
+                                  _controller.historyMoves.value = [
+                                    ..._controller.historyMoves.value,
+                                    _controller.previousSelected.value
+                                  ];
+                                  _controller.newestSelected.value = [row, col];
+                                  _controller.previousSelected.value = [fromRow, fromColumn];
+                                  _controller.isWhiteTurn.value = !isWhiteTurn;
+                                  if (_controller.isWhiteTurn.value == false) {
+                                    enemyTimer.value = _controller.startTimer(enemyTimer, enemyDuration);
+                                    _controller.pauseTimer(playerTimer, playerDuration);
+                                  } else {
+                                    playerTimer.value = _controller.startTimer(playerTimer, playerDuration);
+                                    _controller.pauseTimer(enemyTimer, enemyDuration);
+                                  }
+                                });
+                              } else if (piece != null && piece.isWhite == isWhiteTurn) {
+                                setState(() {
+                                  final selectedPos = [row, col];
+                                  if (isWhiteTurn) {
+                                    _controller.playerSelected.value = selectedPos;
+                                    _controller.enemySelected.value = [];
+                                  } else {
+                                    _controller.enemySelected.value = selectedPos;
+                                    _controller.playerSelected.value = [];
+                                  }
+                                  // Show available legal move each pieces
+                                  switch (piece.type) {
+                                    case ChessType.pawn:
+                                      _controller.legalMoves.value = _controller.getPawnMoves(row, col);
+                                    case ChessType.knight:
+                                      _controller.legalMoves.value = _controller.getKnightMoves(row, col);
+                                    default:
+                                      _controller.legalMoves.value = [];
+                                  }
+                                });
                               }
-
-                              print(isLegal);
-                              if (selected.isNotEmpty) {
-                                final toRow = selected[0];
-                                final toColumn = selected[1];
-                                print("$toRow $toColumn");
-                              }
-
-                              print("Legal: ${_controller.legalMoves.value}");
-                              if (piece.isWhite) {
-                                _controller.playerSelected.value = [row, col];
-                                _controller.enemySelected.value = [];
-                              } else if (!piece.isWhite) {
-                                _controller.enemySelected.value = [row, col];
-                                _controller.playerSelected.value = [];
-                              }
-                              setState(() {});
                             },
                             child: Stack(
                               children: [
+                                // Component Pieces
                                 if (piece != null)
                                   Positioned(
                                     right: 0,
@@ -138,6 +190,7 @@ class _GameScreenState extends State<GameScreen> {
                                     child: Component(pieces: piece),
                                   ),
 
+                                // Board Number
                                 Positioned(
                                   left: Dimensions.widht2(context),
                                   child: Text(
@@ -160,7 +213,8 @@ class _GameScreenState extends State<GameScreen> {
                                     style: AppTextStyle.montserrat12Semi.copyWith(color: AppPalette.greenColor),
                                   ),
                                 ),
-                                // Show dot if this cell is in legalMoves
+
+                                // Hint move each piece
                                 if (_controller.legalMoves.value.any((pos) => pos[0] == row && pos[1] == col))
                                   Center(
                                     child: Container(

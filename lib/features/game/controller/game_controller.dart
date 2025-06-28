@@ -9,10 +9,18 @@ enum PlayerColor { white, random, black }
 class GameController {
   ValueNotifier<List<int>> enemySelected = ValueNotifier([]);
   ValueNotifier<List<int>> playerSelected = ValueNotifier([]);
+
   ValueNotifier<List<int>> previousSelected = ValueNotifier([]);
+  ValueNotifier<List<int>> newestSelected = ValueNotifier([]);
+
+  ValueNotifier<List<List<int>>> historyMoves = ValueNotifier([]);
 
   late List<List<ChessPieces?>> board;
   ValueNotifier<List<List<int>>> legalMoves = ValueNotifier([]);
+
+  bool isMatch(List<int> list, int row, int col) {
+    return list.isNotEmpty && list[0] == row && list[1] == col;
+  }
 
   GameController() {
     initBoard();
@@ -26,6 +34,10 @@ class GameController {
         if (duration.value.inSeconds <= 0) timer.value?.cancel();
       },
     );
+  }
+
+  void pauseTimer(ValueNotifier<Timer?> timer, ValueNotifier<Duration> duration) {
+    if (timer.value != null) timer.value!.cancel();
   }
 
   bool _isInBounds(int row, int col) => row >= 0 && row < 8 && col >= 0 && col < 8;
@@ -146,13 +158,7 @@ class GameController {
 
   ValueNotifier<bool> isWhiteTurn = ValueNotifier(true);
 
-  ValueNotifier<List<String>> opponentCaptured = ValueNotifier(
-    [
-      'assets/white-pieces/white-bishop.png',
-      'assets/white-pieces/white-knight.png',
-      'assets/white-pieces/white-pawn.png',
-    ],
-  );
+  ValueNotifier<List<String>> opponentCaptured = ValueNotifier([]);
   ValueNotifier<List<String>> playerCaptured = ValueNotifier([]);
 
   ChessType getPiecesType(int col) {
