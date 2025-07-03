@@ -110,6 +110,140 @@ class GameController {
 
     if (piece == null || piece.type != ChessType.queen) return [];
 
+    // Down Moves
+    for (int i = 1; i < 8 - row; i++) {
+      final updatedRow = row + i;
+      if (!_isInBounds(updatedRow, col)) break;
+      final target = board[updatedRow][col];
+      if (target == null) {
+        queenMoves.add([updatedRow, col]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([updatedRow, col]);
+        break;
+      }
+    }
+
+    // Up move
+    for (int i = 1; row - i >= 0; i++) {
+      final updatedRow = row - i;
+      final target = board[updatedRow][col];
+      if (!_isInBounds(updatedRow, col)) break;
+
+      if (target == null) {
+        queenMoves.add([updatedRow, col]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([updatedRow, col]);
+        break;
+      }
+    }
+
+    // Right Move
+    for (int i = 1; i < 8 - col; i++) {
+      final updatedCol = col + i;
+      if (!_isInBounds(row, updatedCol)) break;
+      final target = board[row][updatedCol];
+      if (target == null) {
+        queenMoves.add([row, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([row, updatedCol]);
+        break;
+      }
+    }
+
+    // Left Move
+    for (int i = 1; col - i >= 0; i++) {
+      final updatedCol = col - i;
+      final target = board[row][updatedCol];
+      if (!_isInBounds(row, updatedCol)) break;
+
+      if (target == null) {
+        queenMoves.add([row, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([row, updatedCol]);
+        break;
+      }
+    }
+
+    // Diagonal topRight
+    for (int i = 1; col + i < 8 || row - i >= 0; i++) {
+      final updatedCol = col + i;
+      final updatedRow = row - i;
+
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+      if (target == null) {
+        queenMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+    // Diagonal topLeft
+    for (int i = 1; row - i >= 0 || col - i >= 0; i++) {
+      final updatedRow = row - i;
+      final updatedCol = col - i;
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+
+      if (target == null) {
+        queenMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+    // Diagonal bottomLeft
+    for (int i = 1; i < 8 - row || col - i >= 0; i++) {
+      final updatedRow = row + i;
+      final updatedCol = col - i;
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+      if (target == null) {
+        queenMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+    // Diagonal bottomRight
+    for (int i = 1; i < 8 - row || i < col - i; i++) {
+      final updatedRow = row + i;
+      final updatedCol = col + i;
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+      if (target == null) {
+        queenMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) queenMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+
+    final availableMoves = [
+      [row, col + 1],
+      [row, col - 1],
+      [row - 1, col],
+      [row + 1, col],
+      [row - 1, col + 1],
+      [row - 1, col - 1],
+      [row + 1, col - 1],
+      [row + 1, col + 1],
+    ];
+
+    for (final move in availableMoves) {
+      final updatedRow = move[0];
+      final updatedCol = move[1];
+
+      if (_isInBounds(updatedRow, updatedCol)) {
+        final target = board[updatedRow][updatedCol];
+        if (target == null) {
+          queenMoves.add([updatedRow, updatedCol]);
+        } else {
+          if (target.isWhite != piece.isWhite) queenMoves.add([updatedRow, updatedCol]);
+        }
+      }
+    }
+
     return queenMoves;
   }
 
