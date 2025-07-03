@@ -105,11 +105,44 @@ class GameController {
   }
 
   List<List<int>> getQueenMoves(int row, int col) {
-    return [];
+    List<List<int>> queenMoves = [];
+    final piece = board[row][col];
+
+    if (piece == null || piece.type != ChessType.queen) return [];
+
+    return queenMoves;
   }
 
   List<List<int>> getKingMoves(int row, int col) {
-    return [];
+    List<List<int>> kingMoves = [];
+    final piece = board[row][col];
+    if (piece == null || piece.type != ChessType.king) return [];
+
+    final availableMoves = [
+      [row, col + 1],
+      [row, col - 1],
+      [row - 1, col],
+      [row + 1, col],
+      [row - 1, col + 1],
+      [row - 1, col - 1],
+      [row + 1, col - 1],
+      [row + 1, col + 1],
+    ];
+
+    for (final move in availableMoves) {
+      final updatedRow = move[0];
+      final updatedCol = move[1];
+
+      if (_isInBounds(updatedRow, updatedCol)) {
+        final target = board[updatedRow][updatedCol];
+        if (target == null) {
+          kingMoves.add([updatedRow, updatedCol]);
+        } else {
+          if (target.isWhite != piece.isWhite) kingMoves.add([updatedRow, updatedCol]);
+        }
+      }
+    }
+    return kingMoves;
   }
 
   List<List<int>> getRookMoves(int row, int col) {
@@ -182,8 +215,6 @@ class GameController {
 
     // Diagonal topRight
     for (int i = 1; col + i < 8 || row - i >= 0; i++) {
-      print("Diagonal top right");
-
       final updatedCol = col + i;
       final updatedRow = row - i;
 
@@ -192,7 +223,7 @@ class GameController {
       if (target == null) {
         bishopMoves.add([updatedRow, updatedCol]);
       } else {
-        if (piece.isWhite != piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
+        if (target.isWhite != piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
         break;
       }
     }
@@ -219,7 +250,7 @@ class GameController {
       if (target == null) {
         bishopMoves.add([updatedRow, updatedCol]);
       } else {
-        if (target.isWhite == piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
+        if (target.isWhite != piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
         break;
       }
     }
@@ -232,7 +263,7 @@ class GameController {
       if (target == null) {
         bishopMoves.add([updatedRow, updatedCol]);
       } else {
-        if (target.isWhite == piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
+        if (target.isWhite != piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
         break;
       }
     }

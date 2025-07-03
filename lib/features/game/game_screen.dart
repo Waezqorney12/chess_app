@@ -190,6 +190,10 @@ class _GameScreenState extends State<GameScreen> {
                                       _controller.legalMoves.value = _controller.getRookMoves(row, col);
                                     case ChessType.bishop:
                                       _controller.legalMoves.value = _controller.getBishopMoves(row, col);
+                                    case ChessType.king:
+                                      _controller.legalMoves.value = _controller.getKingMoves(row, col);
+                                    case ChessType.queen:
+                                      _controller.legalMoves.value = _controller.getQueenMoves(row, col);
                                     default:
                                       _controller.legalMoves.value = [];
                                   }
