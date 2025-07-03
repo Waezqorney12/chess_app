@@ -68,6 +68,7 @@ flutter:
     - assets/bot/beginner/
     - assets/black-pieces/
     - assets/white-pieces/
+    - assets/move-classifications/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
