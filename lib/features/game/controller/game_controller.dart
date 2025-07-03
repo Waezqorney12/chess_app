@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'dart:async';
 
 import 'package:chess_application/features/game/chess_pieces.dart';
@@ -110,12 +112,132 @@ class GameController {
     return [];
   }
 
-  List<List<int>> getRockMoves(int row, int col) {
-    return [];
+  List<List<int>> getRookMoves(int row, int col) {
+    List<List<int>> rookMoves = [];
+    final piece = board[row][col];
+
+    if (piece == null || piece.type != ChessType.rock) return [];
+
+    // Down Moves
+    for (int i = 1; i < 8 - row; i++) {
+      final updatedRow = row + i;
+      if (!_isInBounds(updatedRow, col)) break;
+      final target = board[updatedRow][col];
+      if (target == null) {
+        rookMoves.add([updatedRow, col]);
+      } else {
+        if (target.isWhite != piece.isWhite) rookMoves.add([updatedRow, col]);
+        break;
+      }
+    }
+
+    // Up move
+    for (int i = 1; row - i >= 0; i++) {
+      final updatedRow = row - i;
+      final target = board[updatedRow][col];
+      if (!_isInBounds(updatedRow, col)) break;
+
+      if (target == null) {
+        rookMoves.add([updatedRow, col]);
+      } else {
+        if (target.isWhite != piece.isWhite) rookMoves.add([updatedRow, col]);
+        break;
+      }
+    }
+
+    // Right Move
+    for (int i = 1; i < 8 - col; i++) {
+      final updatedCol = col + i;
+      if (!_isInBounds(row, updatedCol)) break;
+      final target = board[row][updatedCol];
+      if (target == null) {
+        rookMoves.add([row, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) rookMoves.add([row, updatedCol]);
+        break;
+      }
+    }
+
+    // Left Move
+    for (int i = 1; col - i >= 0; i++) {
+      final updatedCol = col - i;
+      final target = board[row][updatedCol];
+      if (!_isInBounds(row, updatedCol)) break;
+
+      if (target == null) {
+        rookMoves.add([row, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) rookMoves.add([row, updatedCol]);
+        break;
+      }
+    }
+
+    return rookMoves;
   }
 
   List<List<int>> getBishopMoves(int row, int col) {
-    return [];
+    List<List<int>> bishopMoves = [];
+    final piece = board[row][col];
+    if (piece == null || piece.type != ChessType.bishop) return [];
+
+    // Diagonal topRight
+    for (int i = 1; col + i < 8 || row - i >= 0; i++) {
+      print("Diagonal top right");
+
+      final updatedCol = col + i;
+      final updatedRow = row - i;
+
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+      if (target == null) {
+        bishopMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (piece.isWhite != piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+    // Diagonal topLeft
+    for (int i = 1; row - i >= 0 || col - i >= 0; i++) {
+      final updatedRow = row - i;
+      final updatedCol = col - i;
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+
+      if (target == null) {
+        bishopMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (target.isWhite != piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+    // Diagonal bottomLeft
+    for (int i = 1; i < 8 - row || col - i >= 0; i++) {
+      final updatedRow = row + i;
+      final updatedCol = col - i;
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+      if (target == null) {
+        bishopMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (target.isWhite == piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+    // Diagonal bottomRight
+    for (int i = 1; i < 8 - row || i < col - i; i++) {
+      final updatedRow = row + i;
+      final updatedCol = col + i;
+      if (!_isInBounds(updatedRow, updatedCol)) break;
+      final target = board[updatedRow][updatedCol];
+      if (target == null) {
+        bishopMoves.add([updatedRow, updatedCol]);
+      } else {
+        if (target.isWhite == piece.isWhite) bishopMoves.add([updatedRow, updatedCol]);
+        break;
+      }
+    }
+
+    return bishopMoves;
   }
 
   void initBoard() {

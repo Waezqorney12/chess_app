@@ -27,12 +27,19 @@ class _GameScreenState extends State<GameScreen> {
   late ValueNotifier<Duration> enemyDuration;
   late ValueNotifier<Duration> playerDuration;
   late GameController _controller;
+
   @override
   void initState() {
     _controller = GameController();
     enemyDuration = ValueNotifier(Duration(minutes: widget.timer));
     playerDuration = ValueNotifier(Duration(minutes: widget.timer));
     if (_controller.isWhiteTurn.value) playerTimer.value = _controller.startTimer(playerTimer, playerDuration);
+
+    playerDuration.addListener(
+      () {
+        // if (playerDuration.value.inSeconds == 0) notificationDialog(context: context, onTap: onTap, text: text, type: type);
+      },
+    );
     super.initState();
   }
 
@@ -44,8 +51,9 @@ class _GameScreenState extends State<GameScreen> {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) => notificationDialog(
             context: context,
-            onTap: () => Navigator.pushAndRemoveUntil(context, Routes.home(), (route) => false),
-            text: 'Are you sure want to resign?',
+            type: TypeDialog.notification,
+            notificationButton: () => Navigator.pushAndRemoveUntil(context, Routes.home(), (route) => false),
+            notificationText: 'Are you sure want to resign?',
           ),
         );
       },
@@ -54,8 +62,14 @@ class _GameScreenState extends State<GameScreen> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             InkWell(
               onTap: () {
-                print(_controller.newestSelected.value);
-                print(_controller.previousSelected.value);
+                notificationDialog(
+                  context: context,
+                  type: TypeDialog.result,
+                  actionResultButton: () => Navigator.pushAndRemoveUntil(context, Routes.home(), (route) => false),
+                  findMatchText: 'Find match',
+                  actionText: 'Home',
+                  rematchText: 'Rematch',
+                );
               },
               child: Container(
                 height: 80,
@@ -108,7 +122,6 @@ class _GameScreenState extends State<GameScreen> {
                         color: bgColor,
                         child: InkWell(
                             onTap: () {
-                              print("Row: $row $col");
                               final isLegal =
                                   _controller.legalMoves.value.any((element) => element[0] == row && element[1] == col);
                               final isWhiteTurn = _controller.isWhiteTurn.value;
@@ -173,6 +186,10 @@ class _GameScreenState extends State<GameScreen> {
                                       _controller.legalMoves.value = _controller.getPawnMoves(row, col);
                                     case ChessType.knight:
                                       _controller.legalMoves.value = _controller.getKnightMoves(row, col);
+                                    case ChessType.rock:
+                                      _controller.legalMoves.value = _controller.getRookMoves(row, col);
+                                    case ChessType.bishop:
+                                      _controller.legalMoves.value = _controller.getBishopMoves(row, col);
                                     default:
                                       _controller.legalMoves.value = [];
                                   }
